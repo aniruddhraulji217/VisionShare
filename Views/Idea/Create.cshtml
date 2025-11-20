@@ -1,0 +1,90 @@
+﻿@model IdeaViewModel
+
+@{
+    ViewData["Title"] = "Create Idea Post";
+}
+
+<style>
+    .content-wrapper {
+        padding: 30px;
+        max-width: 900px;
+        margin: 0 auto;
+        background: #1b1e21;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6);
+    }
+
+    h2 {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    label {
+        color: #e1e1e1;
+        font-weight: 600;
+    }
+
+    .form-control, textarea, input {
+        background: #2a2e32 !important;
+        border-color: #3a3f44 !important;
+        color: #fff !important;
+    }
+
+        .form-control:focus {
+            background: #2f3439 !important;
+            color: #fff !important;
+            border-color: #5bc0de !important;
+            box-shadow: 0 0 0 0.2rem rgba(91, 192, 222, 0.25);
+        }
+
+    .btn-primary {
+        padding: 10px 25px;
+    }
+
+    .btn-secondary {
+        padding: 10px 25px;
+    }
+</style>
+
+<div class="content-wrapper mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>@ViewData["Title"]</h2>
+        <a asp-action="Index" asp-controller="Idea" class="btn btn-secondary">Back to List</a>
+    </div>
+
+    <form asp-action="Create" asp-controller="Idea" method="post" enctype="multipart/form-data">
+        <div class="Validation-summary">
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Idea.Title" class="form-label"></label>
+            <input asp-for="Idea.Title" class="form-control" placeholder="Enter idea title…" />
+            <span asp-validation-for="Idea.Title" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Idea.Author" class="form-label">Idea Owner</label>
+            <input asp-for="Idea.Author" class="form-control" placeholder="Enter your name…" />
+            <span asp-validation-for="Idea.Author" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Idea.Description" class="form-label">Describe Idea</label>
+            <textarea asp-for="Idea.Description" class="form-control" rows="5" placeholder="Describe your idea…"></textarea>
+            <span asp-validation-for="Idea.Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label">Upload Image (Optional)</label>
+            <input asp-for="FeatureImage" type="file" class="form-control" />
+            <span asp-validation-for="FeatureImage" class="text-danger"></span>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary">Submit Idea</button>
+            <a asp-action="Index" asp-controller="Idea" class="btn btn-secondary">Back</a>
+        </div>
+    </form>
+</div>
