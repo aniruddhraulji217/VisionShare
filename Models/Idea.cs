@@ -1,31 +1,45 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace VisionShare.Models
 {
     public class Idea
     {
+        // Primary Key
         [Key]
         public int IdeaId { get; set; }
-        [Required(ErrorMessage ="The tite is reqired")]
-        [MaxLength(400, ErrorMessage ="The title cannot exceed 200 characters")]
-        public string Title { get; set; }
-       
-        [Required(ErrorMessage = "The description is reqired")]
 
+        // Title
+        [Required]
+        public string Title { get; set; }
+
+        // Description
+        [Required]
         public string Description { get; set; }
 
-        [Required(ErrorMessage = "The Author is reqired")]
-        [MaxLength(100, ErrorMessage = "The Author cannot exceed 100 characters")]
+        // Optional: Author name
         public string Author { get; set; }
+
+        // Image path stored in wwwroot/images
+        public string FeatureImagePath { get; set; }
+
+        // Creation date
+        public DateTime DatePosted { get; set; }
+
+        // User who uploaded (Identity Name)
         public string UserId { get; set; }
 
-        public string FeatureImagePath { get; set; }   // for image upload
-        
-        [DataType(DataType.Date)]
-        public DateTime DatePosted { get; set; }=DateTime.Now;
+        // Count stored for fast access
+        public int UpvoteCount { get; set; } = 0;
 
-        // public List<Comment> Comments { get; set; }
+        // NEW: View count
+        public int ViewCount { get; set; } = 0;
 
-        public ICollection <Comment> Comments { get; set; }
+        // Navigation property
+        public virtual ICollection<IdeaUpvote> Upvotes { get; set; } = new List<IdeaUpvote>();
+
+        // Computed property
+        public int LikeCount => Upvotes?.Count ?? 0;
     }
 }

@@ -1,0 +1,84 @@
+﻿@if (Model.UserId == User.Identity.Name)
+{
+    <a class="btn btn-warning" asp-controller="Idea" asp-action="Edit" asp-route-id="@Model.IdeaId">Edit</a>
+}
+
+@model VisionShare.Models.Idea
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Xsrf
+
+@{
+    var token = Xsrf.GetAndStoreTokens(Context).RequestToken;
+    bool userLiked = ViewBag.UserLiked != null && (bool)ViewBag.UserLiked;
+}
+
+<h2>@Model.Title</h2>
+
+<p><strong>Author:</strong> @Model.Author</p>
+<p><strong>Date:</strong> @Model.DatePosted.ToShortDateString()</p>
+
+@if (!string.IsNullOrEmpty(Model.FeatureImagePath))
+{
+    <img src="@Model.FeatureImagePath" width="300" style="border-radius:10px; margin-bottom:15px;" />
+}
+
+<hr />
+
+<p>@Model.Description</p>
+
+<hr />
+
+<p>
+    <strong>Views:</strong> <span id="details-view-count">@Model.ViewCount</span>
+    &nbsp;&nbsp;•&nbsp;&nbsp;
+    <strong>Likes:</strong> <span id="details-like-count">@Model.UpvoteCount</span>
+</p>
+
+<button id="details-like-btn"
+        class="btn @(userLiked ? "btn-primary" : "btn-outline-primary")"
+        data-id="@Model.IdeaId"
+        data-token="@token">
+    <span id="details-like-text">@(userLiked ? "Unlike" : "Like")</span>
+</button>
+
+<a class="btn btn-secondary float-end" asp-action="Index">Back to List</a>
+
+@section Scripts {
+    <script>
+        document.getElementById("details-like-btn").addEventListener("click", async function () {
+
+            const ideaId = this.getAttribute("data-id");
+            const token = this.getAttribute("data-token");
+
+            const form = new FormData();
+            form.append("ideaId", ideaId);
+
+            const res = await fetch("/Idea/ToggleLike", {
+                method: "POST",
+                headers: { "RequestVerificationToken": token },
+                body: form
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+
+                const btn = document.getElementById("details-like-btn");
+                const txt = document.getElementById("details-like-text");
+                const likeCount = document.getElementById("details-like-count");
+
+                likeCount.textContent = data.likeCount;
+
+                if (data.liked) {
+                    btn.classList.remove("btn-outline-primary");
+                    btn.classList.add("btn-primary");
+                    txt.textContent = "Unlike";
+                } else {
+                    btn.classList.remove("btn-primary");
+                    btn.classList.add("btn-outline-primary");
+                    txt.textContent = "Like";
+                }
+            }
+        });
+    </script>
+}

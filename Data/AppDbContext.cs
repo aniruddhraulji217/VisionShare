@@ -1,21 +1,26 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VisionShare.Models;
 
 namespace VisionShare.Data
 {
-    public class AppDbContext :DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-
         }
-        public DbSet<VisionShare.Models.Idea> Ideas { get; set; }
-        public DbSet<VisionShare.Models.Comment> Comments { get; set; }
+
+        // Your database tables
+        public DbSet<Idea> Ideas { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<IdeaUpvote> IdeaUpvotes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
+            // Seed data for Ideas
             modelBuilder.Entity<Idea>().HasData(
                 new Idea
                 {
@@ -25,8 +30,8 @@ namespace VisionShare.Data
                     Author = "John Doe",
                     UserId = "user1",
                     FeatureImagePath = "/images/idea1.png",
-                    DatePosted = new DateTime(2025, 11, 9)
-
+                    DatePosted = new DateTime(2025, 11, 9),
+                    UpvoteCount = 0
                 },
                 new Idea
                 {
@@ -36,11 +41,10 @@ namespace VisionShare.Data
                     Author = "Jane Smith",
                     UserId = "user2",
                     FeatureImagePath = "/images/idea2.png",
-                    DatePosted = new DateTime(2025, 11, 10)
+                    DatePosted = new DateTime(2025, 11, 10),
+                    UpvoteCount = 0
                 }
-
-
-                );
+            );
         }
     }
 }
