@@ -1,25 +1,31 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using VisionShare.Models;
+using Microsoft.EntityFrameworkCore;
+using VisionShare.Data;
 
 namespace VisionShare.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly AppDbContext _context;
+
+        public HomeController(AppDbContext context)
         {
-            return View();
+            _context = context;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var ideas = await _context.Ideas
+                .OrderByDescending(i => i.DatePosted)
+                .ToListAsync();
+
+
+            return View(ideas);
         }
 
         public IActionResult Privacy()
         {
             return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

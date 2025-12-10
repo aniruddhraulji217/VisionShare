@@ -1,8 +1,18 @@
-﻿@model IdeaViewModel
+﻿@{
+    bool isEdit = Model.Idea?.IdeaId > 0;
+}
+
+@model IdeaViewModel
 
 @{
     ViewData["Title"] = "Create Idea Post";
 }
+
+@if (isEdit && !string.IsNullOrEmpty(Model.Idea.FeatureImagePath))
+{
+    <img src="@Model.Idea.FeatureImagePath" style="width:200px; border-radius:8px; margin-bottom:10px;" />
+}
+
 
 <style>
     .content-wrapper {
@@ -52,7 +62,10 @@
         <a asp-action="Index" asp-controller="Idea" class="btn btn-secondary">Back to List</a>
     </div>
 
-    <form asp-action="Create" asp-controller="Idea" method="post" enctype="multipart/form-data">
+    <form asp-action="@(isEdit ? "Edit" : "Create")"
+          asp-route-id="@(isEdit ? Model.Idea.IdeaId : null)"
+          enctype="multipart/form-data">
+
         <div class="Validation-summary">
             <div asp-validation-summary="All" class="text-danger"></div>
 

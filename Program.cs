@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VisionShare.Data;
 
@@ -6,13 +7,22 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AppDbContext>(Options =>
-{
-    Options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"));
-}
-
+// Add DbContext (already present in your project)
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+// Add Identity (default UI)
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false; // change to true if you enable email confirmation
+    options.User.RequireUniqueEmail = false; // set true if you will use emails as unique
+})
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
+    .AddDefaultUI();
+
+builder.Services.AddRazorPages();
 
 var app = builder.Build();
 
@@ -20,21 +30,22 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();     // make sure static files (css/js/images) are served
+
 app.UseRouting();
 
+app.UseAuthentication();  // <-- IMPORTANT: before UseAuthorization
 app.UseAuthorization();
-
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}"
+);
 
+app.MapRazorPages(); // <-- required by Identity's default UI
 
 app.Run();

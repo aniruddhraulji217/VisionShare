@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VisionShare.Data;
 
@@ -11,9 +12,11 @@ using VisionShare.Data;
 namespace VisionShare.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251121101821_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -263,7 +266,8 @@ namespace VisionShare.Migrations
 
                     b.Property<string>("Author")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("DatePosted")
                         .HasColumnType("datetime2");
@@ -278,7 +282,8 @@ namespace VisionShare.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(400)
+                        .HasColumnType("nvarchar(400)");
 
                     b.Property<int>("UpvoteCount")
                         .HasColumnType("int");
@@ -286,9 +291,6 @@ namespace VisionShare.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ViewCount")
-                        .HasColumnType("int");
 
                     b.HasKey("IdeaId");
 
@@ -304,8 +306,7 @@ namespace VisionShare.Migrations
                             FeatureImagePath = "/images/idea1.png",
                             Title = "First Idea",
                             UpvoteCount = 0,
-                            UserId = "user1",
-                            ViewCount = 0
+                            UserId = "user1"
                         },
                         new
                         {
@@ -316,20 +317,19 @@ namespace VisionShare.Migrations
                             FeatureImagePath = "/images/idea2.png",
                             Title = "Second Idea",
                             UpvoteCount = 0,
-                            UserId = "user2",
-                            ViewCount = 0
+                            UserId = "user2"
                         });
                 });
 
             modelBuilder.Entity("VisionShare.Models.IdeaUpvote", b =>
                 {
-                    b.Property<int>("IdeaUpvoteId")
+                    b.Property<int>("UpvoteId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("IdeaUpvoteId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UpvoteId"));
 
-                    b.Property<DateTime>("CreatedAt")
+                    b.Property<DateTime>("DateVoted")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("IdeaId")
@@ -339,7 +339,7 @@ namespace VisionShare.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("IdeaUpvoteId");
+                    b.HasKey("UpvoteId");
 
                     b.HasIndex("IdeaId");
 
@@ -400,7 +400,7 @@ namespace VisionShare.Migrations
             modelBuilder.Entity("VisionShare.Models.Comment", b =>
                 {
                     b.HasOne("VisionShare.Models.Idea", "Idea")
-                        .WithMany()
+                        .WithMany("Comments")
                         .HasForeignKey("IdeaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -411,7 +411,7 @@ namespace VisionShare.Migrations
             modelBuilder.Entity("VisionShare.Models.IdeaUpvote", b =>
                 {
                     b.HasOne("VisionShare.Models.Idea", "Idea")
-                        .WithMany("Upvotes")
+                        .WithMany()
                         .HasForeignKey("IdeaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -421,7 +421,7 @@ namespace VisionShare.Migrations
 
             modelBuilder.Entity("VisionShare.Models.Idea", b =>
                 {
-                    b.Navigation("Upvotes");
+                    b.Navigation("Comments");
                 });
 #pragma warning restore 612, 618
         }

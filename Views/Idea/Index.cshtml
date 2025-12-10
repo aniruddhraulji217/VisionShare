@@ -1,0 +1,24 @@
+﻿@model IEnumerable<VisionShare.Models.Idea>
+
+<h2>All Ideas</h2>
+
+<a class="btn btn-primary" asp-action="Create">Create New Idea</a>
+
+<hr />
+
+@foreach (var idea in Model)
+{
+    <div class="card mb-3 p-3">
+        <h3>@idea.Title</h3>
+
+        @if (!string.IsNullOrEmpty(idea.FeatureImagePath))
+        {
+            <img src="@idea.FeatureImagePath" width="200" class="img-thumbnail mb-2" />
+        }
+
+        <p>@idea.Description</p>
+        <p><b>By:</b> @idea.Author</p>
+
+        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@idea.IdeaId">View Details</a>
+    </div>
+}
